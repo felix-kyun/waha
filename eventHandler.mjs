@@ -1,0 +1,12 @@
+import { messageHandler } from "./messageHandler.mjs";
+
+export async function eventHandler(e) {
+  const data = JSON.parse(e.data);
+  const { event, me, payload, environment } = data;
+
+  switch (event) {
+    case "message":
+      messageHandler(payload);
+      break;
+  }
+}
