@@ -1,5 +1,5 @@
-import { fileToBase64 } from "../misc/fileToBase64.mjs";
-import { downloadVideo } from "../misc/yt-dlp.mjs";
+import { isMediaUrl } from "../misc/isMediaUrl.mjs";
+import { replyWithVideo } from "./methods/replyWithVideo.mjs";
 
 const contacts = new Map();
 const raw = await fetch("http://localhost:3000/api/contacts/all");
@@ -8,44 +8,12 @@ contactsData.forEach(({ id, shortName }) => {
   contacts.set(id, shortName);
 });
 
-export async function messageHandler({ body, from, id }) {
-  if (checkUrl(body)) {
-    const videoPath = await downloadVideo(body);
-    const encodedVideo = await fileToBase64(videoPath);
+export async function messageHandler(payload) {
+  const { body, from, id } = payload;
 
-    const reply = {
-      session: "default",
-      chatId: from,
-      reply_to: id,
-      asNote: false,
-      caption: "Downloaded Video",
-      file: {
-        filename: "video.mp4",
-        mimetype: "video/mp4",
-        data: encodedVideo,
-      },
-    };
-
-    console.log("sending video");
-
-    const response = await fetch("http://localhost:3000/api/sendVideo", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(reply),
-    });
-
-    if (!response.ok) {
-      console.error("Error sending video:", response.statusText);
-    } else {
-      console.log("Video sent successfully");
-    }
+  if (isMediaUrl(body)) {
+    replyWithVideo(payload);
   } else {
     console.log(`${contacts.get(from)}: ${body}`);
   }
-}
-
-function checkUrl(url) {
-  return url.includes("https://");
 }
