@@ -1,32 +1,28 @@
-import blessed from "blessed";
-import BlessedContrib from "blessed-contrib";
-import { fetchContacts } from "./misc/fetchContacts.mjs";
+import { eventHandler } from "./eventHandler.mjs";
 
-const state = {};
+const baseUrl = "ws://localhost:3000/ws";
+const session = "*";
+const events = ["session.status", "message.any"];
 
-const screen = blessed.screen({
-  smartCSR: true,
-  title: "whatui",
+const query = new URLSearchParams({
+  session,
+  events: events.join(","),
 });
 
-const grid = new BlessedContrib.grid({
-  screen: screen,
-  rows: 1,
-  cols: 16,
-});
+const wsUrl = `${baseUrl}?${query.toString()}`;
 
-const ContactsView = grid.set(0, 0, 1, 3, blessed.list);
-const ChatView = grid.set(0, 3, 1, 13, blessed.list);
-const DebugView = grid.set(1, 0, 1, 16, blessed.log);
+const ws = new WebSocket(wsUrl);
 
-// get contacts
-state.contacts = await fetchContacts();
-state.selectedContact = state.contacts[0];
-
-const render = () => {
-  ContactsView.setItems(Array.from(state.contacts.values()));
-  ChatView.setItems(["Hello", "World"]);
-  screen.render();
+ws.onopen = () => {
+  console.log("WebSocket connection opened", wsUrl);
 };
 
-render();
+ws.onclose = () => {
+  console.log("WebSocket connection closed");
+};
+
+ws.onmessage = eventHandler;
+
+ws.onerror = (error) => {
+  console.error("WebSocket Error:", error);
+};

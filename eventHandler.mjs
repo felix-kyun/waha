@@ -5,7 +5,7 @@ export async function eventHandler(e) {
   const { event, me, payload, environment } = data;
 
   switch (event) {
-    case "message":
+    case "message.any":
       messageHandler(payload);
       break;
   }
