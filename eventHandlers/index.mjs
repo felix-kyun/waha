@@ -1,4 +1,4 @@
-import { messageHandler } from "./messageHandler.mjs";
+import { messageHandler } from "./message.any.mjs";
 
 export async function eventHandler(e) {
   const data = JSON.parse(e.data);

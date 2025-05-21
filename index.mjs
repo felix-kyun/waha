@@ -1,4 +1,4 @@
-import { eventHandler } from "./eventHandler.mjs";
+import { eventHandler } from "./eventHandlers/index.mjs";
 
 const baseUrl = "ws://localhost:3000/ws";
 const session = "*";

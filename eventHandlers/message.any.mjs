@@ -1,5 +1,5 @@
-import { fileToBase64 } from "./fileToBase64.mjs";
-import { downloadVideo } from "./yt-dlp.mjs";
+import { fileToBase64 } from "../misc/fileToBase64.mjs";
+import { downloadVideo } from "../misc/yt-dlp.mjs";
 
 const contacts = new Map();
 const raw = await fetch("http://localhost:3000/api/contacts/all");
@@ -17,6 +17,7 @@ export async function messageHandler({ body, from, id }) {
       session: "default",
       chatId: from,
       reply_to: id,
+      asNote: false,
       caption: "Downloaded Video",
       file: {
         filename: "video.mp4",
